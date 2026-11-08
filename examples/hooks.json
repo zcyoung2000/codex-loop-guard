@@ -1,0 +1,1 @@
+{"hooks":{"PreToolUse":[{"hooks":[{"command":"/usr/bin/python3 /Users/YOU/.codex/hooks/loop_guard.py","type":"command"}]}]}}
