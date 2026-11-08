@@ -27,7 +27,7 @@ MAX_GROUP_SIZE = 5
 REPEAT_COUNT = 6
 SIMILARITY_THRESHOLD = 0.9
 MAX_TRANSCRIPT_BYTES = 2 * 1024 * 1024
-MAX_CALLS = 200
+MAX_CALLS = REPEAT_COUNT * MAX_GROUP_SIZE + 10  # detection window + margin
 
 # Hook-event tool name -> transcript tool name.
 TOOL_NAME_ALIASES = {

@@ -12,7 +12,7 @@ Codex agents sometimes get stuck: the same shell command over and over, or a cyc
 
 ## How it works
 
-1. On every `PreToolUse` event, the hook reads the last ~200 tool calls from the session transcript (`transcript_path` from the hook input; falls back to locating the session file by `session_id` under `~/.codex/sessions`).
+1. On every `PreToolUse` event, the hook reads only the tail of the session transcript (the detection window needs just the last 30 calls) (`transcript_path` from the hook input; falls back to locating the session file by `session_id` under `~/.codex/sessions`).
 2. It appends the pending call (unless it is already recorded — see notes below) and checks, for each group size `p = 1..5`, whether the last `6 × p` calls form 6 repetitions of the same sequence. Two calls count as *the same* when the tool names match and the normalized arguments are equal or ≥ 0.9 similar (`difflib` ratio).
 3. On a match it returns `{"decision": "block", "reason": "..."}` so the call never executes and the model sees the warning. Otherwise it stays silent and allows the call.
 4. Fail-open by design: any error (missing transcript, parse failure, unexpected format) allows the call. A buggy guard must never brick your sessions.
@@ -63,7 +63,7 @@ Constants at the top of `loop_guard.py`:
 | `REPEAT_COUNT` | `6` | Repetitions needed to trigger a block |
 | `MAX_GROUP_SIZE` | `5` | Largest tool-group size checked |
 | `SIMILARITY_THRESHOLD` | `0.9` | Argument similarity that still counts as "the same call" |
-| `MAX_CALLS` | `200` | How many recent calls are considered |
+| `MAX_CALLS` | derived: `REPEAT_COUNT × MAX_GROUP_SIZE + 10` | How many recent calls are considered |
 
 If you get false positives (e.g. legitimately listing six files whose names differ by one character), raise `SIMILARITY_THRESHOLD` or `REPEAT_COUNT`.
 
